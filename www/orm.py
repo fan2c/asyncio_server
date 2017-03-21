@@ -1,4 +1,7 @@
-
+# -*- coding: utf-8 -*-
+'''
+ORM
+'''
 
 import asyncio, logging
 
@@ -10,6 +13,7 @@ logging.basicConfig(level=logging.INFO)
 def log(sql, args=()):
     logging.info('SQL: %s' %sql)
 
+# connect Database
 @asyncio.coroutine
 def create_pool(loop, **kw):
     logging.info('create database connection pool...')
@@ -20,10 +24,6 @@ def create_pool(loop, **kw):
         user = kw['user'],
         password = kw['password'],
         db = kw['db'],
-        charset = kw.get('charset', 'utf8'),
-        autocommit = kw.get('autocommit', True),
-        maxsize = kw.get('maxsize', 10),
-        minsize = kw.get('minsize', 1),
         loop = loop
     )
 
@@ -34,6 +34,8 @@ def destroy_pool():
         __pool.close()
         yield from __pool.wait_closed()
 
+
+# Select
 @asyncio.coroutine
 def select(sql, args, size=None):
     log(sql, args)
@@ -170,7 +172,7 @@ class Model(dict, metaclass=ModelMetaclass):
                 setattr(self, key, value)
         return value
 
-
+# 不需要实例化，直接类名.方法名()来调用
     @classmethod
     @asyncio.coroutine
     def find(cls, primaryKey):
